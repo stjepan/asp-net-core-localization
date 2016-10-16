@@ -1,15 +1,12 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Localization.Controllers;
+﻿using Localization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace Localization
 {
@@ -60,16 +57,7 @@ namespace Localization
 
             if (!env.IsDevelopment())
             {
-                requestLocalizationOptions.RequestCultureProviders.Insert(0, new CustomRequestCultureProvider(context =>
-                {
-                    var hostFragments = context.Request.Host.Host.Split('.');
-
-                    var culture = hostFragments.Last();
-
-                    var result = new ProviderCultureResult(culture);
-
-                    return Task.FromResult(result);
-                }));
+                requestLocalizationOptions.RequestCultureProviders.Insert(0, new TopLevelDomainRequestCultureProvider());
             }
 
             app.UseRequestLocalization(requestLocalizationOptions);
